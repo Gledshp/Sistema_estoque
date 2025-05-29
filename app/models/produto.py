@@ -11,7 +11,7 @@ class Produto:
         self._preco_venda = preco_venda
         self._quantidade = quantidade
         self._estoque_minimo = estoque_minimo
-        self._fornecedor = fornecedor  # objeto Fornecedor
+        self._fornecedor = fornecedor
 
     @property
     def id(self):

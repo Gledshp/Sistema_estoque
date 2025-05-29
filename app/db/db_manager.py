@@ -15,9 +15,7 @@ class DBManager:
         try:
             self.con_estoque = sqlite3.connect(self.db_estoque)
             self.con_estoque.execute("PRAGMA foreign_keys = ON")
-
             self.con_usuarios = sqlite3.connect(self.db_usuarios)
-
         except Error as e:
             print(f"Erro ao conectar aos bancos de dados: {e}")
             raise
@@ -51,8 +49,8 @@ class DBManager:
                     FOREIGN KEY(fornecedor_id) REFERENCES fornecedores(id)
                 )
             ''')
-            c_usuarios = self.con_usuarios.cursor()
 
+            c_usuarios = self.con_usuarios.cursor()
             c_usuarios.execute('''
                 CREATE TABLE IF NOT EXISTS usuarios (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -66,10 +64,10 @@ class DBManager:
 
             self.con_estoque.commit()
             self.con_usuarios.commit()
-
         except Error as e:
             print(f"Erro ao criar tabelas: {e}")
             raise
+
     def inserir_usuario(self, nome, login, email, senha, nivel):
         try:
             c = self.con_usuarios.cursor()
@@ -107,8 +105,67 @@ class DBManager:
         except Error as e:
             print(f"Erro ao inserir fornecedor: {e}")
             raise
+
+    def listar_fornecedores(self):
+        try:
+            c = self.con_estoque.cursor()
+            c.execute("SELECT id, nome, contato, telefone, email FROM fornecedores")
+            return c.fetchall()
+        except Error as e:
+            print(f"Erro ao listar fornecedores: {e}")
+            return []
+
+    def obter_fornecedor_por_id(self, fornecedor_id):
+        try:
+            c = self.con_estoque.cursor()
+            c.execute("SELECT id, nome, contato, telefone, email FROM fornecedores WHERE id=?", (fornecedor_id,))
+            return c.fetchone()
+        except Error as e:
+            print(f"Erro ao obter fornecedor: {e}")
+            return None
+
+    def inserir_produto(self, nome, codigo, descricao, categoria, fornecedor_id, quantidade, estoque_minimo, preco_custo, preco_venda):
+        try:
+            c = self.con_estoque.cursor()
+            c.execute("""
+                INSERT INTO produtos (
+                    nome, codigo, descricao, categoria, fornecedor_id,
+                    quantidade, estoque_minimo, preco_custo, preco_venda
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (nome, codigo, descricao, categoria, fornecedor_id, quantidade, estoque_minimo, preco_custo, preco_venda))
+            self.con_estoque.commit()
+            return c.lastrowid
+        except Error as e:
+            print(f"Erro ao inserir produto: {e}")
+            raise
+
+    def obter_produto_por_id(self, produto_id):
+        try:
+            c = self.con_estoque.cursor()
+            c.execute("""
+                SELECT id, nome, codigo, descricao, categoria, fornecedor_id,
+                       quantidade, estoque_minimo, preco_custo, preco_venda
+                FROM produtos WHERE id=?
+            """, (produto_id,))
+            return c.fetchone()
+        except Error as e:
+            print(f"Erro ao obter produto: {e}")
+            return None
+
+    def produtos_estoque_baixo(self):
+        try:
+            c = self.con_estoque.cursor()
+            c.execute("""
+                SELECT nome, quantidade, estoque_minimo 
+                FROM produtos 
+                WHERE quantidade < estoque_minimo
+            """)
+            return c.fetchall()
+        except Error as e:
+            print(f"Erro ao verificar estoque baixo: {e}")
+            return []
+
     def fechar(self):
-        """Fecha ambas as conexões"""
         if self.con_estoque:
             self.con_estoque.close()
         if self.con_usuarios:
