@@ -1,0 +1,260 @@
+2025-05-30 22:10:56,508 - INFO - Conexão com o banco de dados estabelecida
+2025-05-30 22:10:56,508 - INFO - Tabelas criadas com sucesso
+2025-05-30 22:11:11,947 - INFO - Conexão com o banco de dados estabelecida
+2025-05-30 22:11:11,948 - INFO - Tabelas criadas com sucesso
+2025-05-30 22:11:19,016 - INFO - Conexão com o banco de dados estabelecida
+2025-05-30 22:11:19,016 - INFO - Tabelas criadas com sucesso
+2025-05-30 22:11:20,471 - INFO - Conexão com o banco de dados estabelecida
+2025-05-30 22:11:20,472 - INFO - Tabelas criadas com sucesso
+2025-05-30 22:11:26,594 - INFO - Conexão com o banco de dados estabelecida
+2025-05-30 22:11:26,596 - INFO - Tabelas criadas com sucesso
+2025-05-30 22:11:26,599 - ERROR - Erro ao carregar estoque: tuple index out of range
+Traceback (most recent call last):
+  File "C:\Users\Gleds\PycharmProjects\sistema_estoque\app\interface\tela_relatorios.py", line 43, in carregar_dados
+    if produto[6] < produto[7]:
+       ~~~~~~~^^^
+IndexError: tuple index out of range
+2025-05-30 22:13:40,254 - INFO - Conexões com o banco de dados fechadas
+2025-05-30 22:13:43,033 - INFO - Conexões com o banco de dados fechadas
+2025-05-30 22:17:42,602 - INFO - Conexão com o banco de dados estabelecida
+2025-05-30 22:17:42,603 - INFO - Tabelas criadas com sucesso
+2025-05-30 22:17:49,214 - INFO - Conexão com o banco de dados estabelecida
+2025-05-30 22:17:49,215 - INFO - Tabelas criadas com sucesso
+2025-05-30 22:21:23,032 - INFO - Conexão com o banco de dados estabelecida
+2025-05-30 22:21:23,032 - INFO - Tabelas criadas com sucesso
+2025-05-30 22:21:23,870 - INFO - Conexão com o banco de dados estabelecida
+2025-05-30 22:21:23,871 - INFO - Tabelas criadas com sucesso
+2025-05-30 22:21:29,304 - INFO - Conexão com o banco de dados estabelecida
+2025-05-30 22:21:29,304 - INFO - Tabelas criadas com sucesso
+2025-05-30 22:24:00,115 - INFO - Conexão com o banco de dados estabelecida
+2025-05-30 22:24:00,116 - INFO - Tabelas criadas com sucesso
+2025-05-30 22:24:36,107 - INFO - Conexão com o banco de dados estabelecida
+2025-05-30 22:24:36,107 - INFO - Tabelas criadas com sucesso
+2025-05-30 22:24:44,859 - INFO - Conexão com o banco de dados estabelecida
+2025-05-30 22:24:44,860 - INFO - Tabelas criadas com sucesso
+2025-05-30 22:38:54,538 - INFO - Conexão com o banco de dados estabelecida
+2025-05-30 22:38:54,539 - INFO - Tabelas criadas com sucesso
+2025-05-30 22:38:59,071 - INFO - Conexão com o banco de dados estabelecida
+2025-05-30 22:38:59,071 - INFO - Tabelas criadas com sucesso
+2025-05-30 22:40:29,233 - INFO - Conexões com o banco de dados fechadas
+2025-05-30 22:40:30,786 - INFO - Conexões com o banco de dados fechadas
+2025-05-31 11:32:42,441 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 11:32:42,444 - INFO - Tabelas criadas com sucesso
+2025-05-31 11:34:55,881 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 11:34:55,882 - INFO - Tabelas criadas com sucesso
+2025-05-31 11:41:31,660 - INFO - Conexões com o banco de dados fechadas
+2025-05-31 11:41:33,538 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 11:41:33,539 - INFO - Tabelas criadas com sucesso
+2025-05-31 11:41:34,626 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 11:41:34,627 - INFO - Tabelas criadas com sucesso
+2025-05-31 11:41:35,379 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 11:41:35,379 - INFO - Tabelas criadas com sucesso
+2025-05-31 11:41:40,713 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 11:41:40,714 - INFO - Tabelas criadas com sucesso
+2025-05-31 11:43:04,109 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 11:43:04,111 - INFO - Tabelas criadas com sucesso
+2025-05-31 11:43:31,777 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 11:43:31,779 - INFO - Tabelas criadas com sucesso
+2025-05-31 11:43:38,318 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 11:43:38,319 - INFO - Tabelas criadas com sucesso
+2025-05-31 11:44:14,170 - INFO - Conexões com o banco de dados fechadas
+2025-05-31 11:44:15,715 - INFO - Conexões com o banco de dados fechadas
+2025-05-31 11:44:17,322 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 11:44:17,323 - INFO - Tabelas criadas com sucesso
+2025-05-31 11:44:22,354 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 11:44:22,354 - INFO - Tabelas criadas com sucesso
+2025-05-31 11:44:39,593 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 11:44:39,595 - INFO - Tabelas criadas com sucesso
+2025-05-31 11:46:22,575 - ERROR - Erro ao consultar CNPJ: no such column: cnpj
+2025-05-31 11:47:32,564 - ERROR - Erro ao consultar CNPJ: no such column: cnpj
+2025-05-31 12:00:09,548 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 12:00:09,550 - INFO - Tabelas criadas com sucesso
+2025-05-31 12:00:21,122 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 12:00:21,122 - INFO - Tabelas criadas com sucesso
+2025-05-31 12:00:25,714 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 12:00:25,715 - INFO - Tabelas criadas com sucesso
+2025-05-31 12:00:32,370 - INFO - Conexões com o banco de dados fechadas
+2025-05-31 12:00:34,306 - INFO - Conexões com o banco de dados fechadas
+2025-05-31 12:01:34,749 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 12:01:34,750 - INFO - Tabelas criadas com sucesso
+2025-05-31 12:01:41,021 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 12:01:41,022 - INFO - Tabelas criadas com sucesso
+2025-05-31 12:02:00,534 - ERROR - Erro ao consultar CNPJ: no such column: cnpj
+2025-05-31 12:05:36,509 - ERROR - Erro ao consultar CNPJ: no such column: cnpj
+2025-05-31 12:09:27,531 - INFO - Conexões com o banco de dados fechadas
+2025-05-31 12:09:31,291 - INFO - Conexões com o banco de dados fechadas
+2025-05-31 12:09:37,474 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 12:09:37,475 - INFO - Tabelas criadas com sucesso
+2025-05-31 12:09:42,369 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 12:09:42,371 - INFO - Tabelas criadas com sucesso
+2025-05-31 12:09:44,846 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 12:09:44,848 - INFO - Tabelas criadas com sucesso
+2025-05-31 12:11:49,344 - INFO - Conexões com o banco de dados fechadas
+2025-05-31 12:21:35,231 - INFO - Conexões com o banco de dados fechadas
+2025-05-31 12:29:16,387 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 12:29:16,387 - INFO - Tabelas criadas com sucesso
+2025-05-31 12:33:55,893 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 12:33:55,893 - INFO - Tabelas criadas com sucesso
+2025-05-31 12:34:12,384 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 12:34:12,384 - INFO - Tabelas criadas com sucesso
+2025-05-31 12:40:12,375 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 12:40:12,376 - INFO - Tabelas criadas com sucesso
+2025-05-31 12:40:16,734 - WARNING - Tentativa de login inválida: gleds
+2025-05-31 12:47:11,183 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 12:47:11,184 - INFO - Tabelas criadas com sucesso
+2025-05-31 12:47:12,467 - INFO - Conexões com o banco de dados fechadas
+2025-05-31 13:13:33,130 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 13:13:33,133 - INFO - Tabelas criadas com sucesso
+2025-05-31 13:18:28,568 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 13:18:28,568 - INFO - Tabelas criadas com sucesso
+2025-05-31 13:19:37,237 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 13:19:37,238 - INFO - Tabelas criadas com sucesso
+2025-05-31 13:19:37,754 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 13:19:37,754 - INFO - Tabelas criadas com sucesso
+2025-05-31 13:23:24,938 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 13:23:24,939 - INFO - Tabelas criadas com sucesso
+2025-05-31 13:23:24,939 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 13:23:25,798 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 13:23:25,799 - INFO - Tabelas criadas com sucesso
+2025-05-31 13:23:25,799 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 13:23:40,631 - ERROR - Erro no login: 1
+2025-05-31 13:23:46,289 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 13:23:46,290 - INFO - Tabelas criadas com sucesso
+2025-05-31 13:23:46,290 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 13:23:46,610 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 13:23:46,611 - INFO - Tabelas criadas com sucesso
+2025-05-31 13:23:46,611 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 13:24:23,515 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 13:24:23,515 - INFO - Tabelas criadas com sucesso
+2025-05-31 13:24:23,515 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 13:24:29,433 - WARNING - Tentativa de login inválida: gled
+2025-05-31 13:24:39,444 - WARNING - Tentativa de login inválida: gled
+2025-05-31 13:31:51,564 - ERROR - Erro no login: 1
+2025-05-31 13:59:32,817 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 13:59:32,818 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:02:51,599 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:02:51,600 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:02:51,600 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 14:05:49,598 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:05:49,598 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:05:49,598 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 14:08:12,081 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:08:12,082 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:08:12,082 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 14:09:48,104 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:09:48,106 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:09:48,106 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 14:09:53,548 - ERROR - Erro no login: 1
+2025-05-31 14:12:48,175 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:12:48,176 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:12:48,176 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 14:21:56,688 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:21:56,689 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:21:56,689 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 14:22:02,277 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:22:33,757 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:22:33,758 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:22:33,758 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 14:22:41,183 - WARNING - Usuário não encontrado: gledio
+2025-05-31 14:27:48,304 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:27:48,305 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:27:48,305 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 14:27:56,350 - WARNING - Usuário não encontrado: gledium
+2025-05-31 14:28:17,958 - INFO - Conexões com o banco de dados fechadas
+2025-05-31 14:40:09,017 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:40:09,017 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:40:16,658 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:18,184 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:18,422 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:18,645 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:18,862 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:19,049 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:19,247 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:19,472 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:19,709 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:19,957 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:20,199 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:20,444 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:20,698 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:20,941 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:21,162 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:21,393 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:21,605 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:21,797 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:21,958 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:22,115 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:22,250 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:22,395 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:22,538 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:22,679 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:22,810 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:22,930 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:23,047 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:23,167 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:23,307 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:23,423 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:23,534 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:23,668 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:23,809 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:23,933 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:24,056 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:24,175 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:24,306 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:28,181 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:40:58,729 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:40:58,730 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:41:04,936 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:42:43,972 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:42:43,973 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:42:43,973 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 14:42:49,824 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:42:51,970 - INFO - Conexões com o banco de dados fechadas
+2025-05-31 14:42:57,258 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:42:57,259 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:42:57,259 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 14:43:04,210 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:43:07,400 - INFO - Conexões com o banco de dados fechadas
+2025-05-31 14:45:02,205 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:45:02,206 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:45:02,206 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 14:45:07,143 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:45:17,844 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:47:20,724 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:47:20,724 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:47:20,725 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 14:47:25,192 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:47:29,668 - INFO - Conexões com o banco de dados fechadas
+2025-05-31 14:48:07,289 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:48:07,294 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:48:07,294 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 14:48:15,995 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:48:27,058 - INFO - Conexões com o banco de dados fechadas
+2025-05-31 14:50:43,601 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:50:43,602 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:50:43,602 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 14:50:51,146 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:50:59,039 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:51:06,662 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:51:59,083 - INFO - Conexões com o banco de dados fechadas
+2025-05-31 14:56:18,253 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:56:18,254 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:56:18,254 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 14:56:23,959 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:56:32,499 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 14:56:58,299 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 14:56:58,300 - INFO - Tabelas criadas com sucesso
+2025-05-31 14:56:58,300 - INFO - Banco de dados inicializado com sucesso
+2025-05-31 14:57:03,368 - WARNING - Senha incorreta para usuário: gled
+2025-05-31 15:03:32,743 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 15:03:32,744 - INFO - Tabelas criadas com sucesso
+2025-05-31 15:03:37,560 - WARNING - Senha incorreta para usuário: gleds
+2025-05-31 15:06:47,106 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 15:06:47,107 - INFO - Tabelas criadas com sucesso
+2025-05-31 15:06:47,809 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 15:06:47,810 - INFO - Tabelas criadas com sucesso
+2025-05-31 15:07:22,498 - INFO - Conexão com o banco de dados estabelecida
+2025-05-31 15:07:22,498 - INFO - Tabelas criadas com sucesso
+2025-05-31 15:09:40,027 - ERROR - Falha ao conectar ao banco: name 'DBManager' is not defined
+2025-05-31 15:09:44,892 - CRITICAL - Falha na inicialização: can't invoke "frame" command: application has been destroyed
+2025-05-31 15:13:24,329 - ERROR - Falha ao conectar ao banco: name 'DBManager' is not defined
+2025-05-31 15:13:29,069 - CRITICAL - Falha na inicialização: can't invoke "frame" command: application has been destroyed

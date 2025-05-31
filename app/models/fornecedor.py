@@ -5,6 +5,7 @@ class Fornecedor:
         self._contato = contato
         self._telefone = telefone
         self._email = email
+        self._endereco = endereco
 
     @property
     def id(self):
@@ -41,6 +42,14 @@ class Fornecedor:
     @email.setter
     def email(self, value):
         self._email = value
+
+    @property
+    def endereco(self):
+    return self._endereco
+
+    @endereco.setter
+    def endereco(self, value):
+        self._endereco = value
 
     def __str__(self):
         return f"Fornecedor(id={self._id}, nome='{self._nome}')"

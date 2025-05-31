@@ -1,0 +1,41 @@
+2025-05-29 23:25:44,743 - ERROR - Erro no login: TelaPrincipal.__init__() takes 2 positional arguments but 3 were given
+Traceback (most recent call last):
+  File "C:\Users\Gleds\PycharmProjects\sistema_estoque\app\interface\tela_login.py", line 78, in entrar
+    self.abrir_sistema(usuario)
+  File "C:\Users\Gleds\PycharmProjects\sistema_estoque\app\interface\tela_login.py", line 88, in abrir_sistema
+    TelaPrincipal(self, usuario)  # Passa a referência da janela de login
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: TelaPrincipal.__init__() takes 2 positional arguments but 3 were given
+2025-05-29 23:49:49,003 - ERROR - Erro no login: No module named 'db_manager'
+Traceback (most recent call last):
+  File "C:\Users\Gleds\PycharmProjects\sistema_estoque\app\interface\tela_login.py", line 78, in entrar
+    self.abrir_sistema(usuario)
+  File "C:\Users\Gleds\PycharmProjects\sistema_estoque\app\interface\tela_login.py", line 86, in abrir_sistema
+    from app.interface.tela_principal import TelaPrincipal
+  File "C:\Users\Gleds\PycharmProjects\sistema_estoque\app\interface\tela_principal.py", line 8, in <module>
+    from app.interface.tela_relatorios import TelaRelatorios
+  File "C:\Users\Gleds\PycharmProjects\sistema_estoque\app\interface\tela_relatorios.py", line 3, in <module>
+    from db_manager import DBManager
+ModuleNotFoundError: No module named 'db_manager'
+2025-05-29 23:52:12,212 - ERROR - Erro no login: No module named 'db_manager'
+Traceback (most recent call last):
+  File "C:\Users\Gleds\PycharmProjects\sistema_estoque\app\interface\tela_login.py", line 122, in entrar
+    self.abrir_sistema(usuario)
+  File "C:\Users\Gleds\PycharmProjects\sistema_estoque\app\interface\tela_login.py", line 133, in abrir_sistema
+    from app.interface.tela_principal import TelaPrincipal
+  File "C:\Users\Gleds\PycharmProjects\sistema_estoque\app\interface\tela_principal.py", line 8, in <module>
+    from app.interface.tela_relatorios import TelaRelatorios
+  File "C:\Users\Gleds\PycharmProjects\sistema_estoque\app\interface\tela_relatorios.py", line 3, in <module>
+    from db_manager import DBManager
+ModuleNotFoundError: No module named 'db_manager'
+2025-05-30 17:26:49,349 - ERROR - Erro no login: No module named 'db_manager'
+Traceback (most recent call last):
+  File "C:\Users\Gleds\PycharmProjects\sistema_estoque\app\interface\tela_login.py", line 122, in entrar
+    self.abrir_sistema(usuario)
+  File "C:\Users\Gleds\PycharmProjects\sistema_estoque\app\interface\tela_login.py", line 133, in abrir_sistema
+    from app.interface.tela_principal import TelaPrincipal
+  File "C:\Users\Gleds\PycharmProjects\sistema_estoque\app\interface\tela_principal.py", line 8, in <module>
+    from app.interface.tela_relatorios import TelaRelatorios
+  File "C:\Users\Gleds\PycharmProjects\sistema_estoque\app\interface\tela_relatorios.py", line 3, in <module>
+    from db_manager import DBManager
+ModuleNotFoundError: No module named 'db_manager'

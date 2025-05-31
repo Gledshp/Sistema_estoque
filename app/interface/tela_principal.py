@@ -1,191 +1,353 @@
-# app/interface/tela_principal.py
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import ttk, messagebox
+from app.db.db_manager import DBManager
+from app.interface.tela_cadastro_produtos import TelaCadastroProduto
+from app.interface.tela_cadastro_fornecedores import TelaCadastroFornecedor
 from app.interface.tela_cadastro_usuarios import TelaCadastroUsuarios
-from app.interface.tela_cadastro_fornecedores import TelaCadastroFornecedores
-from app.interface.tela_cadastro_produtos import TelaCadastroProdutos
+from app.interface.tela_cotacao_moedas import TelaCotacaoMoedas
+from app.interface.tela_relatorios import TelaRelatorios
 from app.interface.tela_edicao_produtos import TelaEdicaoProdutos
 from app.interface.tela_edicao_fornecedores import TelaEdicaoFornecedores
-from app.interface.tela_relatorios import TelaRelatorios
-from app.db.db_manager import DBManager
+from app.interface.tela_movimentacao_estoque import TelaMovimentacaoEstoque
 
-class TelaPrincipal(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.title("Sistema de Estoque - Principal")
-        self.geometry("800x600")
-        self.resizable(False, False)
 
-        self.db = DBManager()
-        self.criar_widgets()
+class TelaPrincipal(tk.Toplevel):
+    def __init__(self, parent, usuario):
+        super().__init__(parent)
+        self.title(f"Sistema de Estoque - {usuario['nome']}")
+        self.geometry("1100x750")
+        self.usuario = usuario
 
-    def criar_widgets(self):
-        # Frame principal
-        main_frame = tk.Frame(self)
-        main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
-
-        # Frame para cadastros
-        frame_cadastros = tk.LabelFrame(main_frame, text="Cadastros", padx=10, pady=10)
-        frame_cadastros.pack(fill=tk.X, pady=5)
-
-        btn_usuarios = tk.Button(frame_cadastros, text="Cadastrar Usuário", width=20, command=self.cadastrar_usuario)
-        btn_usuarios.pack(side=tk.LEFT, padx=5)
-
-        btn_fornecedores = tk.Button(frame_cadastros, text="Cadastrar Fornecedor", width=20, command=self.cadastrar_fornecedor)
-        btn_fornecedores.pack(side=tk.LEFT, padx=5)
-
-        btn_produtos = tk.Button(frame_cadastros, text="Cadastrar Produto", width=20, command=self.cadastrar_produto)
-        btn_produtos.pack(side=tk.LEFT, padx=5)
-
-        # Frame para edições
-        frame_edicoes = tk.LabelFrame(main_frame, text="Edições", padx=10, pady=10)
-        frame_edicoes.pack(fill=tk.X, pady=5)
-
-        btn_editar_produtos = tk.Button(frame_edicoes, text="Editar Produtos", width=20, command=self.editar_produtos)
-        btn_editar_produtos.pack(side=tk.LEFT, padx=5)
-
-        btn_editar_fornecedores = tk.Button(frame_edicoes, text="Editar Fornecedores", width=20, command=self.editar_fornecedores)
-        btn_editar_fornecedores.pack(side=tk.LEFT, padx=5)
-
-        # Frame para relatórios
-        frame_relatorios = tk.LabelFrame(main_frame, text="Relatórios", padx=10, pady=10)
-        frame_relatorios.pack(fill=tk.X, pady=5)
-
-        btn_relatorios = tk.Button(frame_relatorios, text="Gerar Relatórios", width=20, command=self.gerar_relatorios)
-        btn_relatorios.pack(side=tk.LEFT, padx=5)
-
-        btn_estoque_baixo = tk.Button(frame_relatorios, text="Estoque Baixo", width=20, command=self.mostrar_estoque_baixo)
-        btn_estoque_baixo.pack(side=tk.LEFT, padx=5)
-
-        # Frame para sair
-        frame_sair = tk.Frame(main_frame, padx=10, pady=10)
-        frame_sair.pack(fill=tk.X, pady=5)
-
-        btn_sair = tk.Button(frame_sair, text="Sair", width=20, command=self.quit)
-        btn_sair.pack()
-
-    def cadastrar_usuario(self):
-        self.withdraw()
-        tela = TelaCadastroUsuarios(self)
-        tela.wait_window()
-        self.deiconify()
-
-    def cadastrar_fornecedor(self):
-        self.withdraw()
-        tela = TelaCadastroFornecedores(self)
-        tela.wait_window()
-        self.deiconify()
-
-    def cadastrar_produto(self):
-        self.withdraw()
-        tela = TelaCadastroProdutos(self)
-        tela.wait_window()
-        self.deiconify()
-
-    def editar_produtos(self):
-        produtos = self.db.listar_produtos()
-        if not produtos:
-            messagebox.showinfo("Edição", "Nenhum produto cadastrado para editar.")
+        try:
+            self.db = parent.db if hasattr(parent, 'db') else DBManager()
+        except Exception as e:
+            messagebox.showerror("Erro", f"Falha ao conectar ao banco: {str(e)}")
+            self.destroy()
             return
 
-        self.withdraw()
-        tela_selecao = tk.Toplevel(self)
-        tela_selecao.title("Selecionar Produto para Edição")
-        tela_selecao.geometry("600x400")
+        self.style = ttk.Style()
+        self.style.configure('TButton', font=('Arial', 10), padding=5)
+        self.style.configure('Title.TLabel', font=('Arial', 14, 'bold'))
+        self.style.configure('Subtitle.TLabel', font=('Arial', 12))
+        self.style.configure('Alert.TLabel', font=('Arial', 10, 'bold'), foreground='red')
 
-        tk.Label(tela_selecao, text="Selecione o produto para editar:").pack(pady=10)
+        self.criar_menu()
+        self.criar_widgets_principal()
+        self.protocol("WM_DELETE_WINDOW", self.fechar_aplicacao)
+        self.center_window()
 
-        tree = ttk.Treeview(tela_selecao, columns=("id", "nome", "codigo", "fornecedor"), show="headings")
-        tree.heading("id", text="ID")
-        tree.heading("nome", text="Nome")
-        tree.heading("codigo", text="Código")
-        tree.heading("fornecedor", text="Fornecedor")
-        tree.column("id", width=50)
-        tree.column("nome", width=200)
-        tree.column("codigo", width=100)
-        tree.column("fornecedor", width=200)
+    def center_window(self):
+        self.update_idletasks()
+        width = self.winfo_width()
+        height = self.winfo_height()
+        x = (self.winfo_screenwidth() // 2) - (width // 2)
+        y = (self.winfo_screenheight() // 2) - (height // 2)
+        self.geometry(f'+{x}+{y}')
 
-        for prod in produtos:
-            tree.insert("", "end", values=(prod[0], prod[1], prod[2], prod[5]))
+    def criar_menu(self):
+        menubar = tk.Menu(self)
 
-        scroll = ttk.Scrollbar(tela_selecao, orient="vertical", command=tree.yview)
-        tree.configure(yscrollcommand=scroll.set)
-        scroll.pack(side="right", fill="y")
-        tree.pack(fill=tk.BOTH, expand=True)
+        menu_cadastro = tk.Menu(menubar, tearoff=0)
+        menu_cadastro.add_command(label="Usuários", command=self.abrir_cadastro_usuarios,
+                                  state='normal' if self.usuario['nivel'] >= 2 else 'disabled')
+        menu_cadastro.add_command(label="Fornecedores", command=self.abrir_cadastro_fornecedores)
+        menu_cadastro.add_command(label="Produtos", command=self.abrir_cadastro_produtos)
+        menu_cadastro.add_separator()
+        menu_cadastro.add_command(label="Sair", command=self.fechar_aplicacao)
+        menubar.add_cascade(label="Cadastros", menu=menu_cadastro)
 
-        def on_select():
-            selected_item = tree.focus()
-            if not selected_item:
-                return
-            produto_id = tree.item(selected_item)["values"][0]
-            tela_selecao.destroy()
-            tela_edicao = TelaEdicaoProdutos(self, produto_id)
-            tela_edicao.wait_window()
-            self.deiconify()
+        menu_estoque = tk.Menu(menubar, tearoff=0)
+        menu_estoque.add_command(label="Movimentação", command=self.abrir_movimentacao_estoque)
+        menu_estoque.add_command(label="Produtos", command=self.abrir_edicao_produtos)
+        menu_estoque.add_command(label="Fornecedores", command=self.abrir_edicao_fornecedores)
+        menubar.add_cascade(label="Estoque", menu=menu_estoque)
 
-        btn_selecionar = tk.Button(tela_selecao, text="Selecionar", command=on_select)
-        btn_selecionar.pack(pady=10)
+        menu_relatorios = tk.Menu(menubar, tearoff=0)
+        menu_relatorios.add_command(label="Gerar Relatórios", command=self.abrir_relatorios)
+        menu_relatorios.add_command(label="Estoque Baixo", command=self.mostrar_estoque_baixo)
+        menu_relatorios.add_command(label="Movimentações", command=self.mostrar_movimentacoes)
+        menubar.add_cascade(label="Relatórios", menu=menu_relatorios)
 
-        tela_selecao.protocol("WM_DELETE_WINDOW", lambda: [tela_selecao.destroy(), self.deiconify()])
+        menu_apis = tk.Menu(menubar, tearoff=0)
+        menu_apis.add_command(label="Cotações de Moedas", command=self.abrir_cotacoes)
+        menubar.add_cascade(label="APIs", menu=menu_apis)
 
-    def editar_fornecedores(self):
-        fornecedores = self.db.listar_fornecedores()
-        if not fornecedores:
-            messagebox.showinfo("Edição", "Nenhum fornecedor cadastrado para editar.")
-            return
+        menu_ajuda = tk.Menu(menubar, tearoff=0)
+        menu_ajuda.add_command(label="Sobre", command=self.mostrar_sobre)
+        menu_ajuda.add_command(label="Manual", command=self.mostrar_manual)
+        menubar.add_cascade(label="Ajuda", menu=menu_ajuda)
 
-        self.withdraw()
-        tela_selecao = tk.Toplevel(self)
-        tela_selecao.title("Selecionar Fornecedor para Edição")
-        tela_selecao.geometry("600x400")
+        self.config(menu=menubar)
 
-        tk.Label(tela_selecao, text="Selecione o fornecedor para editar:").pack(pady=10)
+    def criar_widgets_principal(self):
+        main_frame = tk.Frame(self, padx=20, pady=20)
+        main_frame.pack(expand=True, fill=tk.BOTH)
 
-        tree = ttk.Treeview(tela_selecao, columns=("id", "nome", "contato", "telefone"), show="headings")
-        tree.heading("id", text="ID")
-        tree.heading("nome", text="Nome")
-        tree.heading("contato", text="Contato")
-        tree.heading("telefone", text="Telefone")
-        tree.column("id", width=50)
-        tree.column("nome", width=200)
-        tree.column("contato", width=150)
-        tree.column("telefone", width=100)
+        # Cabeçalho
+        header_frame = tk.Frame(main_frame)
+        header_frame.pack(fill=tk.X, pady=(0, 20))
 
-        for forn in fornecedores:
-            tree.insert("", "end", values=(forn[0], forn[1], forn[2], forn[3]))
+        ttk.Label(
+            header_frame,
+            text=f"Bem-vindo, {self.usuario['nome']}",
+            style='Title.TLabel'
+        ).pack(side=tk.LEFT)
 
-        scroll = ttk.Scrollbar(tela_selecao, orient="vertical", command=tree.yview)
-        tree.configure(yscrollcommand=scroll.set)
-        scroll.pack(side="right", fill="y")
-        tree.pack(fill=tk.BOTH, expand=True)
+        ttk.Label(
+            header_frame,
+            text=f"Nível: {'Administrador' if self.usuario['nivel'] == 3 else 'Usuário' if self.usuario['nivel'] == 2 else 'Operador'}",
+            style='Subtitle.TLabel'
+        ).pack(side=tk.RIGHT)
 
-        def on_select():
-            selected_item = tree.focus()
-            if not selected_item:
-                return
-            fornecedor_id = tree.item(selected_item)["values"][0]
-            tela_selecao.destroy()
-            tela_edicao = TelaEdicaoFornecedores(self, fornecedor_id)
-            tela_edicao.wait_window()
-            self.deiconify()
+        ttk.Label(
+            main_frame,
+            text="Sistema de Gerenciamento de Estoque",
+            style='Subtitle.TLabel'
+        ).pack(pady=(0, 20))
 
-        btn_selecionar = tk.Button(tela_selecao, text="Selecionar", command=on_select)
-        btn_selecionar.pack(pady=10)
+        btn_container = tk.Frame(main_frame)
+        btn_container.pack(pady=10)
 
-        tela_selecao.protocol("WM_DELETE_WINDOW", lambda: [tela_selecao.destroy(), self.deiconify()])
+        btn_frame1 = tk.Frame(btn_container)
+        btn_frame1.pack(pady=5)
 
-    def gerar_relatorios(self):
-        self.withdraw()
-        tela = TelaRelatorios(self)
-        tela.wait_window()
-        self.deiconify()
+        buttons_row1 = [
+            ("Cadastrar Produto", self.abrir_cadastro_produtos),
+            ("Cadastrar Fornecedor", self.abrir_cadastro_fornecedores),
+            ("Movimentar Estoque", self.abrir_movimentacao_estoque)
+        ]
+
+        for text, command in buttons_row1:
+            btn = ttk.Button(
+                btn_frame1,
+                text=text,
+                command=command,
+                width=20
+            )
+            btn.pack(side=tk.LEFT, padx=5, ipady=5)
+
+        btn_frame2 = tk.Frame(btn_container)
+        btn_frame2.pack(pady=5)
+
+        buttons_row2 = [
+            ("Editar Produtos", self.abrir_edicao_produtos),
+            ("Editar Fornecedores", self.abrir_edicao_fornecedores),
+            ("Relatórios", self.abrir_relatorios)
+        ]
+
+        for text, command in buttons_row2:
+            btn = ttk.Button(
+                btn_frame2,
+                text=text,
+                command=command,
+                width=20
+            )
+            btn.pack(side=tk.LEFT, padx=5, ipady=5)
+
+        if self.usuario['nivel'] >= 2:
+            btn_frame3 = tk.Frame(btn_container)
+            btn_frame3.pack(pady=5)
+
+            buttons_row3 = [
+                ("Cadastrar Usuário", self.abrir_cadastro_usuarios),
+                ("Cotações", self.abrir_cotacoes),
+                ("Estoque Baixo", self.mostrar_estoque_baixo)
+            ]
+
+            for text, command in buttons_row3:
+                btn = ttk.Button(
+                    btn_frame3,
+                    text=text,
+                    command=command,
+                    width=20
+                )
+                btn.pack(side=tk.LEFT, padx=5, ipady=5)
+
+        self.criar_secao_alertas(main_frame)
+
+    def criar_secao_alertas(self, parent):
+        alert_frame = tk.LabelFrame(parent, text=" Alertas do Sistema ", font=('Arial', 10, 'bold'), padx=10, pady=10)
+        alert_frame.pack(fill=tk.BOTH, expand=True, pady=10)
+
+        try:
+            produtos = self.db.buscar_produtos_baixo_estoque()
+
+            if produtos:
+                ttk.Label(
+                    alert_frame,
+                    text="Produtos com Estoque Abaixo do Mínimo",
+                    style='Alert.TLabel'
+                ).pack(anchor='w', pady=(0, 5))
+
+                columns = ('id', 'nome', 'quantidade', 'estoque_minimo', 'fornecedor', 'status')
+                tree = ttk.Treeview(alert_frame, columns=columns, show='headings', height=6)
+
+                tree.heading('id', text='ID', anchor='center')
+                tree.heading('nome', text='Nome do Produto')
+                tree.heading('quantidade', text='Quantidade', anchor='center')
+                tree.heading('estoque_minimo', text='Mínimo', anchor='center')
+                tree.heading('fornecedor', text='Fornecedor')
+                tree.heading('status', text='Status', anchor='center')
+
+                tree.column('id', width=50, anchor='center')
+                tree.column('nome', width=250)
+                tree.column('quantidade', width=80, anchor='center')
+                tree.column('estoque_minimo', width=80, anchor='center')
+                tree.column('fornecedor', width=150)
+                tree.column('status', width=100, anchor='center')
+
+                for produto in produtos:
+                    status = "CRÍTICO" if produto[2] == 0 else "ALERTA"
+                    tree.insert('', 'end', values=(
+                        produto[0],
+                        produto[1],
+                        produto[2],
+                        produto[3],
+                        produto[4] if produto[4] else "N/D",
+                        status
+                    ), tags=(status.lower(),))
+
+                tree.tag_configure('crítico', background='#ffcccc')
+                tree.tag_configure('alerta', background='#fff3cd')
+
+                scrollbar = ttk.Scrollbar(alert_frame, orient=tk.VERTICAL, command=tree.yview)
+                tree.configure(yscroll=scrollbar.set)
+
+                tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+                scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+                btn_frame = tk.Frame(alert_frame)
+                btn_frame.pack(fill=tk.X, pady=(5, 0))
+
+                ttk.Button(
+                    btn_frame,
+                    text="Cadastrar Novo Produto",
+                    command=self.abrir_cadastro_produtos,
+                    style='TButton'
+                ).pack(side=tk.RIGHT, padx=5)
+
+            else:
+                ttk.Label(
+                    alert_frame,
+                    text="Nenhum produto com estoque abaixo do mínimo",
+                    style='Subtitle.TLabel'
+                ).pack(expand=True, pady=50)
+
+        except Exception as e:
+            messagebox.showwarning("Aviso", f"Não foi possível carregar alertas: {str(e)}")
+
+    def abrir_movimentacao_estoque(self):
+        try:
+            TelaMovimentacaoEstoque(self)
+        except Exception as e:
+            messagebox.showerror("Erro", f"Não foi possível abrir a movimentação: {str(e)}")
+
+    def mostrar_movimentacoes(self):
+        try:
+            movimentacoes = self.db.listar_movimentacoes()
+            if movimentacoes:
+                msg = "Últimas movimentações:\n\n"
+                for mov in movimentacoes[:10]:  # Mostrar apenas as 10 mais recentes
+                    msg += f"{mov[4]} - {mov[8]} ({mov[2].upper()}): {mov[3]} unidades\n"
+                messagebox.showinfo("Movimentações", msg)
+            else:
+                messagebox.showinfo("Movimentações", "Nenhuma movimentação registrada")
+        except Exception as e:
+            messagebox.showerror("Erro", f"Falha ao obter movimentações: {str(e)}")
+
+    def mostrar_manual(self):
+        messagebox.showinfo(
+            "Manual do Sistema",
+            "Manual do Sistema de Estoque\n\n"
+            "1. Cadastros:\n"
+            "   - Produtos: Cadastre todos os itens do estoque\n"
+            "   - Fornecedores: Cadastre os fornecedores dos produtos\n"
+            "   - Usuários: Gerencie os acessos ao sistema\n\n"
+            "2. Movimentações:\n"
+            "   - Registre entradas e saídas de produtos\n\n"
+            "3. Relatórios:\n"
+            "   - Gere relatórios de estoque e movimentações\n"
+            "   - Verifique produtos com estoque baixo\n\n"
+            "4. Configurações:\n"
+            "   - Edite produtos e fornecedores existentes\n"
+            "   - Consulte cotações de moedas"
+        )
+
+    def abrir_cadastro_produtos(self):
+        try:
+            TelaCadastroProduto(self)
+        except Exception as e:
+            messagebox.showerror("Erro", f"Não foi possível abrir o cadastro de produtos: {str(e)}")
+
+    def abrir_cadastro_fornecedores(self):
+        try:
+            TelaCadastroFornecedor(self)
+        except Exception as e:
+            messagebox.showerror("Erro", f"Não foi possível abrir o cadastro de fornecedores: {str(e)}")
+
+    def abrir_cadastro_usuarios(self):
+        try:
+            TelaCadastroUsuarios(self)
+        except Exception as e:
+            messagebox.showerror("Erro", f"Não foi possível abrir o cadastro de usuários: {str(e)}")
+
+    def abrir_edicao_produtos(self):
+        try:
+            TelaEdicaoProdutos(self)
+        except Exception as e:
+            messagebox.showerror("Erro", f"Não foi possível abrir a edição de produtos: {str(e)}")
+
+    def abrir_edicao_fornecedores(self):
+        try:
+            TelaEdicaoFornecedores(self)
+        except Exception as e:
+            messagebox.showerror("Erro", f"Não foi possível abrir a edição de fornecedores: {str(e)}")
+
+    def abrir_relatorios(self):
+        try:
+            TelaRelatorios(self)
+        except Exception as e:
+            messagebox.showerror("Erro", f"Não foi possível abrir os relatórios: {str(e)}")
 
     def mostrar_estoque_baixo(self):
-        produtos = self.db.produtos_estoque_baixo()
-        if not produtos:
-            messagebox.showinfo("Estoque Baixo", "Nenhum produto está com estoque baixo.")
-        else:
-            msg = "Produtos com estoque baixo:\n"
-            for nome, qtd, minimo in produtos:
-                msg += f"{nome} - Qtde: {qtd}, Mínimo: {minimo}\n"
-            messagebox.showwarning("Estoque Baixo", msg)
+        try:
+            produtos = self.db.buscar_produtos_baixo_estoque()
+            if produtos:
+                mensagem = "Produtos com estoque baixo:\n\n"
+                for p in produtos:
+                    status = "ESGOTADO" if p[2] == 0 else "BAIXO"
+                    mensagem += f"{p[1]} (ID: {p[0]}) - Estoque: {p[2]} (Mínimo: {p[3]}) - {status}\n"
+                messagebox.showinfo("Estoque Baixo", mensagem)
+            else:
+                messagebox.showinfo("Estoque Baixo", "Nenhum produto com estoque abaixo do mínimo")
+        except Exception as e:
+            messagebox.showerror("Erro", f"Falha ao verificar estoque baixo: {str(e)}")
+
+    def abrir_cotacoes(self):
+        try:
+            TelaCotacaoMoedas(self)
+        except Exception as e:
+            messagebox.showerror("Erro", f"Não foi possível abrir as cotações: {str(e)}")
+
+    def mostrar_sobre(self):
+        messagebox.showinfo(
+            "Sobre",
+            "Sistema de Estoque v2.0\n\n"
+            "Desenvolvido para controle de estoque\n"
+            "Funcionalidades:\n"
+            "- Cadastro de produtos e fornecedores\n"
+            "- Controle de usuários\n"
+            "- Relatórios e estoque mínimo\n"
+            "- Movimentações de estoque\n"
+            "- Integração com APIs externas"
+        )
+
+    def fechar_aplicacao(self):
+        try:
+            if hasattr(self, 'db') and self.db:
+                self.db.fechar()
+            self.master.deiconify()
+            self.destroy()
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao fechar a aplicação: {str(e)}")
+            self.destroy()
