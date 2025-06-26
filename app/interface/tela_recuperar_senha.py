@@ -11,6 +11,7 @@ class TelaRecuperarSenha(tk.Toplevel):
         self.title("Recuperação de Senha")
         self.geometry("400x250")
         self.resizable(False, False)
+        self.master = master
 
         self.db = master.db if hasattr(master, 'db') else None
         self._is_destroyed = False
@@ -49,6 +50,10 @@ class TelaRecuperarSenha(tk.Toplevel):
 
             self.fechar_janela()
 
+            if self.master:
+                self.master.deiconify()
+                self.master.focus_force()
+
         except Exception as e:
             messagebox.showerror("Erro", f"Falha ao enviar e-mail: {str(e)}")
             logging.error(f"Erro ao enviar e-mail de recuperação: {str(e)}")
@@ -56,6 +61,10 @@ class TelaRecuperarSenha(tk.Toplevel):
     def fechar_janela(self):
         self._is_destroyed = True
         self.destroy()
+
+        if self.master:
+            self.master.deiconify()
+            self.master.focus_force()
 
     def __del__(self):
         if not self._is_destroyed:

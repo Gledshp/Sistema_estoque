@@ -7,7 +7,7 @@ class TelaEdicaoFornecedores(tk.Toplevel):
     def __init__(self, master=None, fornecedor_id=None):
         super().__init__(master)
         self.title("Edição de Fornecedor")
-        self.geometry("800x600")
+        self.geometry("1000x700")
         self.resizable(False, False)
 
         self.db = master.db if hasattr(master, 'db') else DBManager()

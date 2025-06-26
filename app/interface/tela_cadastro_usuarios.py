@@ -13,6 +13,7 @@ class TelaCadastroUsuarios(tk.Toplevel):
         self.geometry("400x450")
         self.resizable(False, False)
         self.modo_cadastro = modo_cadastro
+        self.master = master
 
         try:
             self.db = master.db if hasattr(master, 'db') else DBManager()
@@ -23,6 +24,7 @@ class TelaCadastroUsuarios(tk.Toplevel):
 
         self.criar_widgets()
         self.center_window()
+        self.protocol("WM_DELETE_WINDOW", self.fechar_janela)
 
     def center_window(self):
         self.update_idletasks()
@@ -87,6 +89,8 @@ class TelaCadastroUsuarios(tk.Toplevel):
 
     def fechar_janela(self):
         self._is_destroyed = True
+        if self.master:
+            self.master.deiconify()
         self.destroy()
 
     def __del__(self):
