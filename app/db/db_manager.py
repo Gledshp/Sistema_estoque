@@ -35,10 +35,11 @@ class DBManager:
         try:
             c_estoque = self.con_estoque.cursor()
 
+            # Tabela fornecedores com constraints de unicidade
             c_estoque.execute('''
                 CREATE TABLE IF NOT EXISTS fornecedores (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    nome TEXT NOT NULL,
+                    nome TEXT NOT NULL UNIQUE,
                     contato TEXT,
                     telefone TEXT,
                     email TEXT,
@@ -46,7 +47,6 @@ class DBManager:
                     endereco TEXT,
                     data_cadastro TEXT DEFAULT CURRENT_TIMESTAMP
                 )''')
-
             c_estoque.execute('''
                 CREATE TABLE IF NOT EXISTS produtos (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -60,9 +60,11 @@ class DBManager:
                     preco_custo REAL DEFAULT 0 CHECK(preco_custo >= 0),
                     preco_venda REAL DEFAULT 0 CHECK(preco_venda >= 0),
                     data_cadastro TEXT DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY(fornecedor_id) REFERENCES fornecedores(id)
+                    FOREIGN KEY(fornecedor_id) REFERENCES fornecedores(id),
+                    CHECK(preco_venda >= preco_custo)
                 )''')
 
+            # Tabela movimentações
             c_estoque.execute('''
                 CREATE TABLE IF NOT EXISTS movimentacoes (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -75,6 +77,7 @@ class DBManager:
                     FOREIGN KEY(produto_id) REFERENCES produtos(id)
                 )''')
 
+            # Tabela usuários
             c_usuarios = self.con_usuarios.cursor()
             c_usuarios.execute('''
                 CREATE TABLE IF NOT EXISTS usuarios (
@@ -87,6 +90,7 @@ class DBManager:
                     data_cadastro TEXT DEFAULT CURRENT_TIMESTAMP
                 )''')
 
+            # Criar usuário admin padrão se não existir
             c_usuarios.execute("SELECT * FROM usuarios WHERE login = 'admin'")
             if not c_usuarios.fetchone():
                 senha_admin = sha256('admin123'.encode()).hexdigest()
@@ -104,6 +108,7 @@ class DBManager:
             logging.error(f"Erro ao criar tabelas: {e}")
             raise RuntimeError("Falha na inicialização do banco de dados")
 
+    # Métodos para usuários
     def validar_login(self, login, senha):
         try:
             if not login or not senha:
@@ -158,11 +163,193 @@ class DBManager:
             self.con_usuarios.rollback()
             raise RuntimeError(f"Falha no cadastro de usuário: {e}")
 
+    def verificar_fornecedor_existente(self, nome, cnpj=None):
+        """Verifica se já existe um fornecedor com o mesmo nome ou CNPJ"""
+        try:
+            c = self.con_estoque.cursor()
+            c.execute('SELECT COUNT(*) FROM fornecedores WHERE nome = ?', (nome,))
+            if c.fetchone()[0] > 0:
+                return True, "nome"
+            if cnpj:
+                c.execute('SELECT COUNT(*) FROM fornecedores WHERE cnpj = ?', (cnpj,))
+                if c.fetchone()[0] > 0:
+                    return True, "cnpj"
+
+            return False, None
+
+        except Error as e:
+            logging.error(f"Erro ao verificar fornecedor existente: {e}")
+            raise RuntimeError("Falha ao verificar fornecedor existente")
+
+    def inserir_fornecedor(self, nome, contato=None, telefone=None, email=None, cnpj=None, endereco=None):
+        try:
+            if not nome:
+                raise ValueError("Nome é obrigatório")
+
+            if cnpj:
+                if len(cnpj) != 14 or not cnpj.isdigit():
+                    raise ValueError("CNPJ deve conter exatamente 14 dígitos numéricos")
+
+            c = self.con_estoque.cursor()
+            c.execute('''
+                INSERT INTO fornecedores (nome, contato, telefone, email, cnpj, endereco)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (nome, contato, telefone, email, cnpj, endereco))
+
+            self.con_estoque.commit()
+            return c.lastrowid
+        except sqlite3.IntegrityError as e:
+            self.con_estoque.rollback()
+            if "UNIQUE constraint" in str(e):
+                if "cnpj" in str(e):
+                    raise ValueError("CNPJ já cadastrado para outro fornecedor")
+                elif "nome" in str(e):
+                    raise ValueError("Já existe um fornecedor com este nome")
+            raise RuntimeError(f"Erro ao inserir fornecedor: {e}")
+        except Error as e:
+            self.con_estoque.rollback()
+            raise RuntimeError(f"Falha no cadastro de fornecedor: {e}")
+
+    def atualizar_fornecedor(self, fornecedor_id, nome=None, contato=None, telefone=None,
+                             email=None, cnpj=None, endereco=None):
+        try:
+            if not fornecedor_id:
+                raise ValueError("ID do fornecedor é obrigatório")
+
+            fornecedor = self.obter_fornecedor_por_id(fornecedor_id)
+            if not fornecedor:
+                raise ValueError("Fornecedor não encontrado")
+
+            nome = nome if nome is not None else fornecedor[1]
+            contato = contato if contato is not None else fornecedor[2]
+            telefone = telefone if telefone is not None else fornecedor[3]
+            email = email if email is not None else fornecedor[4]
+            cnpj = cnpj if cnpj is not None else fornecedor[5]
+            endereco = endereco if endereco is not None else fornecedor[6]
+
+            if cnpj and (len(cnpj) != 14 or not cnpj.isdigit()):
+                raise ValueError("CNPJ deve conter exatamente 14 dígitos numéricos")
+
+            c = self.con_estoque.cursor()
+            c.execute('''
+                UPDATE fornecedores 
+                SET nome = ?,
+                    contato = ?,
+                    telefone = ?,
+                    email = ?,
+                    cnpj = ?,
+                    endereco = ?
+                WHERE id = ?
+            ''', (nome, contato, telefone, email, cnpj, endereco, fornecedor_id))
+
+            self.con_estoque.commit()
+            return c.rowcount
+        except sqlite3.IntegrityError as e:
+            self.con_estoque.rollback()
+            if "UNIQUE constraint" in str(e):
+                if "cnpj" in str(e):
+                    raise ValueError("CNPJ já cadastrado para outro fornecedor")
+                elif "nome" in str(e):
+                    raise ValueError("Já existe um fornecedor com este nome")
+            raise RuntimeError(f"Erro ao atualizar fornecedor: {e}")
+        except Error as e:
+            self.con_estoque.rollback()
+            raise RuntimeError(f"Falha ao atualizar fornecedor: {e}")
+
+    def listar_fornecedores(self, filtro=None):
+        try:
+            c = self.con_estoque.cursor()
+
+            if filtro:
+                query = '''
+                    SELECT * FROM fornecedores 
+                    WHERE nome LIKE ? OR cnpj LIKE ?
+                    ORDER BY nome
+                '''
+                param = f"%{filtro}%"
+                c.execute(query, (param, param))
+            else:
+                c.execute('SELECT * FROM fornecedores ORDER BY nome')
+
+            return c.fetchall()
+        except Error as e:
+            logging.error(f"Erro ao listar fornecedores: {e}")
+            raise RuntimeError("Falha ao recuperar lista de fornecedores")
+
+    def consultar_cnpj(self, cnpj):
+        try:
+            if not cnpj or len(cnpj) != 14 or not cnpj.isdigit():
+                raise ValueError("CNPJ deve conter exatamente 14 dígitos numéricos")
+
+            c = self.con_estoque.cursor()
+            c.execute('SELECT id, nome FROM fornecedores WHERE cnpj = ?', (cnpj,))
+            fornecedor = c.fetchone()
+
+            if fornecedor:
+                return {
+                    'existe': True,
+                    'id': fornecedor[0],
+                    'nome': fornecedor[1]
+                }
+            return {'existe': False}
+
+        except ValueError as ve:
+            raise ve
+        except Error as e:
+            logging.error(f"Erro ao consultar CNPJ: {e}")
+            raise RuntimeError("Falha ao consultar CNPJ")
+
+    def obter_fornecedor_por_id(self, fornecedor_id):
+        try:
+            c = self.con_estoque.cursor()
+            c.execute('SELECT * FROM fornecedores WHERE id = ?', (fornecedor_id,))
+            return c.fetchone()
+        except Error as e:
+            logging.error(f"Erro ao obter fornecedor: {e}")
+            raise RuntimeError(f"Falha ao obter fornecedor: {e}")
+
+    def eliminar_fornecedor(self, fornecedor_id):
+        try:
+            if not fornecedor_id:
+                raise ValueError("ID do fornecedor é obrigatório")
+
+            c = self.con_estoque.cursor()
+
+            fornecedor = self.obter_fornecedor_por_id(fornecedor_id)
+            if not fornecedor:
+                raise ValueError("Fornecedor não encontrado")
+
+            c.execute("SELECT COUNT(*) FROM produtos WHERE fornecedor_id = ?", (fornecedor_id,))
+            count = c.fetchone()[0]
+
+            if count > 0:
+                raise ValueError("Não é possível eliminar fornecedor com produtos associados")
+
+            c.execute("DELETE FROM fornecedores WHERE id = ?", (fornecedor_id,))
+            self.con_estoque.commit()
+            return c.rowcount
+        except ValueError as ve:
+            self.con_estoque.rollback()
+            raise ve
+        except Error as e:
+            self.con_estoque.rollback()
+            raise RuntimeError(f"Falha ao eliminar fornecedor: {e}")
+
+    # Métodos para produtos
     def inserir_produto(self, nome, codigo, descricao=None, categoria=None, fornecedor_id=None,
                         quantidade=0, estoque_minimo=0, preco_custo=0, preco_venda=0):
         try:
             if not nome or not codigo:
                 raise ValueError("Nome e código são obrigatórios")
+
+            if fornecedor_id and not self.obter_fornecedor_por_id(fornecedor_id):
+                raise ValueError("Fornecedor não encontrado")
+
+            if preco_custo < 0 or preco_venda < 0 or estoque_minimo < 0 or quantidade < 0:
+                raise ValueError("Valores não podem ser negativos")
+
+            if preco_venda < preco_custo:
+                raise ValueError("Preço de venda não pode ser menor que preço de custo")
 
             c = self.con_estoque.cursor()
             c.execute('''
@@ -183,7 +370,7 @@ class DBManager:
             self.con_estoque.rollback()
             raise RuntimeError(f"Falha no cadastro de produto: {e}")
 
-    def atualizar_produto(self, produto_id, nome, codigo, descricao=None, categoria=None,
+    def atualizar_produto(self, produto_id, nome=None, codigo=None, descricao=None, categoria=None,
                           fornecedor_id=None, quantidade=None, estoque_minimo=None,
                           preco_custo=None, preco_venda=None):
         try:
@@ -203,6 +390,12 @@ class DBManager:
             estoque_minimo = estoque_minimo if estoque_minimo is not None else produto[7]
             preco_custo = preco_custo if preco_custo is not None else produto[8]
             preco_venda = preco_venda if preco_venda is not None else produto[9]
+
+            if preco_custo < 0 or preco_venda < 0 or estoque_minimo < 0 or quantidade < 0:
+                raise ValueError("Valores não podem ser negativos")
+
+            if preco_venda < preco_custo:
+                raise ValueError("Preço de venda não pode ser menor que preço de custo")
 
             c = self.con_estoque.cursor()
             c.execute('''
@@ -260,119 +453,36 @@ class DBManager:
             logging.error(f"Erro ao listar produtos: {e}")
             raise RuntimeError("Falha ao recuperar lista de produtos")
 
-    def inserir_fornecedor(self, nome, contato=None, telefone=None, email=None, cnpj=None, endereco=None):
-        try:
-            if not nome:
-                raise ValueError("Nome é obrigatório")
-
-            if cnpj:
-                if len(cnpj) != 14 or not cnpj.isdigit():
-                    raise ValueError("CNPJ deve conter exatamente 14 dígitos numéricos")
-
-            c = self.con_estoque.cursor()
-            c.execute('''
-                INSERT INTO fornecedores (nome, contato, telefone, email, cnpj, endereco)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ''', (nome, contato, telefone, email, cnpj, endereco))
-
-            self.con_estoque.commit()
-            return c.lastrowid
-        except sqlite3.IntegrityError as e:
-            self.con_estoque.rollback()
-            if "UNIQUE constraint" in str(e):
-                if "cnpj" in str(e):
-                    raise ValueError("CNPJ já cadastrado para outro fornecedor")
-            raise RuntimeError(f"Erro ao inserir fornecedor: {e}")
-        except Error as e:
-            self.con_estoque.rollback()
-            raise RuntimeError(f"Falha no cadastro de fornecedor: {e}")
-
-    def atualizar_fornecedor(self, fornecedor_id, nome=None, contato=None, telefone=None,
-                             email=None, cnpj=None, endereco=None):
-        try:
-            if not fornecedor_id:
-                raise ValueError("ID do fornecedor é obrigatório")
-
-            fornecedor = self.obter_fornecedor_por_id(fornecedor_id)
-            if not fornecedor:
-                raise ValueError("Fornecedor não encontrado")
-
-            nome = nome if nome is not None else fornecedor[1]
-            contato = contato if contato is not None else fornecedor[2]
-            telefone = telefone if telefone is not None else fornecedor[3]
-            email = email if email is not None else fornecedor[4]
-            cnpj = cnpj if cnpj is not None else fornecedor[5]
-            endereco = endereco if endereco is not None else fornecedor[6]
-
-            if cnpj and (len(cnpj) != 14 or not cnpj.isdigit()):
-                raise ValueError("CNPJ deve conter exatamente 14 dígitos numéricos")
-
-            c = self.con_estoque.cursor()
-            c.execute('''
-                UPDATE fornecedores 
-                SET nome = ?,
-                    contato = ?,
-                    telefone = ?,
-                    email = ?,
-                    cnpj = ?,
-                    endereco = ?
-                WHERE id = ?
-            ''', (nome, contato, telefone, email, cnpj, endereco, fornecedor_id))
-
-            self.con_estoque.commit()
-            return c.rowcount
-        except sqlite3.IntegrityError as e:
-            self.con_estoque.rollback()
-            if "UNIQUE constraint" in str(e):
-                if "cnpj" in str(e):
-                    raise ValueError("CNPJ já cadastrado para outro fornecedor")
-            raise RuntimeError(f"Erro ao atualizar fornecedor: {e}")
-        except Error as e:
-            self.con_estoque.rollback()
-            raise RuntimeError(f"Falha ao atualizar fornecedor: {e}")
-
-    def listar_fornecedores(self, filtro=None):
+    def listar_produtos_relatorio(self, filtro=None):
         try:
             c = self.con_estoque.cursor()
 
+            query = '''
+                SELECT 
+                    p.id, 
+                    p.nome, 
+                    p.quantidade, 
+                    p.estoque_minimo,
+                    CASE WHEN p.quantidade < p.estoque_minimo THEN 'ALERTA' ELSE 'Normal' END as status,
+                    f.nome as fornecedor,
+                    p.preco_venda
+                FROM produtos p
+                LEFT JOIN fornecedores f ON p.fornecedor_id = f.id
+            '''
+
+            params = ()
             if filtro:
-                query = '''
-                    SELECT * FROM fornecedores 
-                    WHERE nome LIKE ? OR cnpj LIKE ?
-                    ORDER BY nome
-                '''
+                query += " WHERE p.nome LIKE ? OR p.codigo LIKE ? OR f.nome LIKE ?"
                 param = f"%{filtro}%"
-                c.execute(query, (param, param))
-            else:
-                c.execute('SELECT * FROM fornecedores ORDER BY nome')
+                params = (param, param, param)
+
+            query += " ORDER BY p.nome"
+            c.execute(query, params)
 
             return c.fetchall()
         except Error as e:
-            logging.error(f"Erro ao listar fornecedores: {e}")
-            raise RuntimeError("Falha ao recuperar lista de fornecedores")
-
-    def consultar_cnpj(self, cnpj):
-        try:
-            if not cnpj or len(cnpj) != 14 or not cnpj.isdigit():
-                raise ValueError("CNPJ deve conter exatamente 14 dígitos numéricos")
-
-            c = self.con_estoque.cursor()
-            c.execute('SELECT id, nome FROM fornecedores WHERE cnpj = ?', (cnpj,))
-            fornecedor = c.fetchone()
-
-            if fornecedor:
-                return {
-                    'existe': True,
-                    'id': fornecedor[0],
-                    'nome': fornecedor[1]
-                }
-            return {'existe': False}
-
-        except ValueError as ve:
-            raise ve
-        except Error as e:
-            logging.error(f"Erro ao consultar CNPJ: {e}")
-            raise RuntimeError("Falha ao consultar CNPJ")
+            logging.error(f"Erro ao listar produtos para relatório: {e}")
+            raise RuntimeError("Falha ao recuperar lista de produtos para relatório")
 
     def obter_produto_por_id(self, produto_id):
         try:
@@ -388,15 +498,46 @@ class DBManager:
             logging.error(f"Erro ao obter produto: {e}")
             raise RuntimeError(f"Falha ao obter produto: {e}")
 
-    def obter_fornecedor_por_id(self, fornecedor_id):
+    def obter_produto_por_codigo(self, codigo):
         try:
             c = self.con_estoque.cursor()
-            c.execute('SELECT * FROM fornecedores WHERE id = ?', (fornecedor_id,))
+            c.execute('''
+                SELECT p.*, f.nome as fornecedor_nome 
+                FROM produtos p
+                LEFT JOIN fornecedores f ON p.fornecedor_id = f.id
+                WHERE p.codigo = ?
+            ''', (codigo,))
             return c.fetchone()
         except Error as e:
-            logging.error(f"Erro ao obter fornecedor: {e}")
-            raise RuntimeError(f"Falha ao obter fornecedor: {e}")
+            logging.error(f"Erro ao obter produto por código: {e}")
+            raise RuntimeError(f"Falha ao obter produto por código: {e}")
 
+    def verificar_produto_existente(self, nome_produto, fornecedor_id):
+        try:
+            c = self.con_estoque.cursor()
+            c.execute('''
+                SELECT COUNT(*) FROM produtos 
+                WHERE nome = ? AND fornecedor_id = ?
+            ''', (nome_produto, fornecedor_id))
+            return c.fetchone()[0] > 0
+        except Error as e:
+            logging.error(f"Erro ao verificar produto existente: {e}")
+            raise RuntimeError("Falha ao verificar produto existente")
+
+    def obter_categorias_produtos(self):
+        try:
+            c = self.con_estoque.cursor()
+            c.execute('''
+                SELECT DISTINCT categoria FROM produtos 
+                WHERE categoria IS NOT NULL AND categoria != ''
+                ORDER BY categoria
+            ''')
+            return [row[0] for row in c.fetchall()]
+        except Error as e:
+            logging.error(f"Erro ao obter categorias de produtos: {e}")
+            return []
+
+    # Métodos para movimentações
     def registrar_movimentacao(self, produto_id, tipo, quantidade, usuario_id, observacao=None):
         try:
             if not produto_id or not tipo or not quantidade or not usuario_id:
@@ -487,33 +628,6 @@ class DBManager:
         except Error as e:
             logging.error(f"Erro ao buscar produtos com baixo estoque: {e}")
             raise RuntimeError("Falha ao buscar produtos com baixo estoque")
-
-    def eliminar_fornecedor(self, fornecedor_id):
-        try:
-            if not fornecedor_id:
-                raise ValueError("ID do fornecedor é obrigatório")
-
-            c = self.con_estoque.cursor()
-
-            fornecedor = self.obter_fornecedor_por_id(fornecedor_id)
-            if not fornecedor:
-                raise ValueError("Fornecedor não encontrado")
-
-            c.execute("SELECT COUNT(*) FROM produtos WHERE fornecedor_id = ?", (fornecedor_id,))
-            count = c.fetchone()[0]
-
-            if count > 0:
-                raise ValueError("Não é possível eliminar fornecedor com produtos associados")
-
-            c.execute("DELETE FROM fornecedores WHERE id = ?", (fornecedor_id,))
-            self.con_estoque.commit()
-            return c.rowcount
-        except ValueError as ve:
-            self.con_estoque.rollback()
-            raise ve
-        except Error as e:
-            self.con_estoque.rollback()
-            raise RuntimeError(f"Falha ao eliminar fornecedor: {e}")
 
     def eliminar_produto(self, produto_id):
         try:
